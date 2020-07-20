@@ -1,0 +1,52 @@
+version: '3'
+services:
+  jenkins:
+    container_name: jenkins
+    image: ansible-jenkins
+    build:
+      context: ansible-jenkins
+    ports:
+      - "8080:8080"
+    volumes:
+      - /opt/jenkins_home:/var/jenkins_home
+    networks:
+      - net
+  remote_host:
+    container_name: remote_host
+    image: remote_host
+    build:
+      context: centos
+    networks:
+      - net
+  mysqldb:
+    container_name: mysqldb
+    image: mysql:5.7
+    volumes:
+      - $PWD/mysql_data:/var/lib/mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=1234"
+    networks: 
+      - net
+  webapp:
+    container_name: webapp
+    image: nginxphp_webapp
+    ports:
+      - "80:80"
+    build: 
+      context: ansible-jenkins/web/
+    networks:
+      - net
+  git:
+    container_name: git-server
+    image: 'gitlab/gitlab-ce:latest'
+    hostname: 'gitlab.mhn.com'
+    ports:
+      - '8090:80'
+    volumes:
+      - '/srv/gitlab/config:/etc/gitlab'
+      - '/srv/gitlab/logs:/var/log/gitlab'
+      - '/srv/gitlab/data:/var/opt/gitlab'
+    networks:
+      - net
+networks:
+  net:

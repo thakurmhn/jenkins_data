@@ -1,0 +1,13 @@
+version: '3'  # docker-compse version
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins
+    ports:
+      - "8080:8080"
+    volumes:
+      - /opt/jenkins_home:/var/jenkins_home
+    networks:
+      - net
+networks:   # create network named net
+  net:
